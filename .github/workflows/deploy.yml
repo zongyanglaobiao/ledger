@@ -14,6 +14,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      id-token: write
 
     # 选择系统运行
     runs-on: ubuntu-latest
@@ -36,6 +37,11 @@ jobs:
           path: ${{ github.workspace }}
 
   deploy:
+    # 权限：增加 id-token 权限
+    permissions:
+      id-token: write
+      contents: write
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

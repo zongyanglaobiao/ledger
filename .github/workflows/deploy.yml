@@ -12,7 +12,7 @@ jobs:
 
     # 权限
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     # 选择系统运行

@@ -35,7 +35,7 @@ jobs:
       - name: 上传项目
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ github.workspace }}
+          path: ${{ github.workspace }}/dist
 
   deploy:
     # 权限：增加 id-token 权限

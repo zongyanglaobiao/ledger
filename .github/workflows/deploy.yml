@@ -43,7 +43,7 @@ jobs:
       id-token: write
       contents: write
       pages: write  # 这里同样添加 pages 的写权限
-
+    environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest

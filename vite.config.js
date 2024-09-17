@@ -9,6 +9,7 @@ export default defineConfig({
         react(),
         UnoCSS()
     ],
+    base: '/ledger/',
     resolve:{
         alias:{
             '@':resolve('src')

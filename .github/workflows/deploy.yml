@@ -28,9 +28,9 @@ jobs:
       - name: 编译构建
         run: |
           cd ${{ github.workspace }}/
-          ls
           npm install 
           npm run build
+          ls
 
       - name: 上传项目
         uses: actions/upload-pages-artifact@v3

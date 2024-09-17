@@ -1,4 +1,4 @@
-name: 部署
+name: Node.js Package
 
 #推送事件触发
 on:
@@ -7,36 +7,29 @@ on:
       - master
 
 jobs:
-  ledger-build:
-    name: 部署账本
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npm test
+
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    runs-on: ubuntu-latest
     steps:
-      - name: 拉取仓库 # -name让github知道这个步骤的名字
-        # 必须使用这个命令才行
-        uses: actions/checkout@v4
-
-      - name: 编译构建
-        run: |
-          cd ${{ github.workspace }}/
-          ls
-          npm install 
-          npm run build
-
-      - name: 上传
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          path: ${{ github.workspace }}
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: ledger-build
-    steps:
-      - name: 部署到 GitHub 页面
-        id: deployment
-        uses: actions/deploy-pages@v4
+          node-version: 20
+          registry-url: https://npm.pkg.github.com/
+      - run: npm ci
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

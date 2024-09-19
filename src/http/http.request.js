@@ -1,23 +1,10 @@
 import axios from "axios";
-import {message} from "antd";
 import {store} from "@/redux/store.js";
-import {AUTHORIZE_FAIL, authorizeAction} from "@/redux/feature/authorize.js";
+import {authorizeAction} from "@/redux/feature/authorize.js";
+import {getToken, getTokenName, removeToken} from "@/lib/toolkit/local.storage.js";
+import {Toast} from "antd-mobile";
 
 const URL = import.meta.env.VITE_REACT_APP_PATH
-const TOKEN_NAME = "auth";
-
-const getToken = () => {
-	return localStorage.getItem(TOKEN_NAME) || ''
-}
-
-const setToken = (token) => {
-	localStorage.setItem(TOKEN_NAME, token)
-}
-
-const removeToken = () => {
-	localStorage.removeItem(TOKEN_NAME)
-}
-
 
 // 创建 axios 请求实例
 const serviceAxios = axios.create({
@@ -29,9 +16,8 @@ const serviceAxios = axios.create({
 // 创建请求拦截
 serviceAxios.interceptors.request.use(
 	(config) => {
-		config.headers = {'Content-Type': 'application/json',...config.headers,[TOKEN_NAME]:getToken()};
-		//Post是data
-		//get是params
+		config.headers = {'Content-Type': 'application/json',...config.headers,[getTokenName()]:getToken()};
+		//Post是data，get是params
 		return config;
 	},
 	(error) => {
@@ -44,11 +30,13 @@ serviceAxios.interceptors.request.use(
 serviceAxios.interceptors.response.use(
 	(res) => {
 		if (res.data.code === 403) {
-			//判断登录是否失效
-			message.error(res.data.message);
+			Toast.show({
+				icon: 'fail',
+				content: res.data.message,
+			})
 			//移除之前的token
 			removeToken()
-			store.dispatch(authorizeAction(AUTHORIZE_FAIL))
+			store.dispatch(authorizeAction())
 		}
 		return res.data;
 	},
@@ -101,7 +89,6 @@ serviceAxios.interceptors.response.use(
 			}
 		}
 		//http错误进行提醒
-		message.error(msg);
 		return Promise.reject(msg);
 	}
 );
@@ -129,6 +116,6 @@ const request = {
 	}
 }
 
-export {URL,TOKEN_NAME,getToken,setToken,removeToken}
+export {URL}
 
 export default request;

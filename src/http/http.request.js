@@ -2,7 +2,7 @@ import axios from "axios";
 import {store} from "@/redux/store.js";
 import {authorizeAction} from "@/redux/feature/authorize.js";
 import {getToken, getTokenName, removeToken} from "@/lib/toolkit/local.storage.js";
-import {Toast} from "antd-mobile";
+import {showError} from "@/lib/toolkit/toast.js";
 
 const URL = import.meta.env.VITE_REACT_APP_PATH
 
@@ -29,11 +29,8 @@ serviceAxios.interceptors.request.use(
 // 创建响应拦截
 serviceAxios.interceptors.response.use(
 	(res) => {
-		if (res.data.code === 403) {
-			Toast.show({
-				icon: 'fail',
-				content: res.data.message,
-			})
+		if (res.data.code === 401) {
+			showError(res.data.message)
 			//移除之前的token
 			removeToken()
 			store.dispatch(authorizeAction())
@@ -89,6 +86,7 @@ serviceAxios.interceptors.response.use(
 			}
 		}
 		//http错误进行提醒
+		showError(msg)
 		return Promise.reject(msg);
 	}
 );
@@ -115,6 +113,8 @@ const request = {
 		})
 	}
 }
+
+
 
 export {URL}
 

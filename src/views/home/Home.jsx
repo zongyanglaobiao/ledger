@@ -1,14 +1,12 @@
 import reactSvg from '@/assets/react.svg';
 import viteSvg from '@/assets/vite.svg';
 import {Button} from "antd-mobile";
-import {useNavigate} from "react-router-dom";
 import {removeToken} from "@/lib/toolkit/local.storage.js";
 import {useDispatch} from "react-redux";
 import {authorizeAction} from "@/redux/feature/authorize.js";
 import {getLedger} from "@/http/api/ledger.api.js";
 
 const Home = () => {
-    const navigate = useNavigate();
     const dispatch = useDispatch()
     return (
         <div className='w-full h-vh layout-center'>

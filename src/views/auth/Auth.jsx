@@ -5,13 +5,14 @@ import {useNavigate} from "react-router-dom";
 import {Space} from "antd-mobile";
 import Bg from '@/assets/stacked-peaks-haikei.svg'
 import '@/views/auth/auth.css'
-import {getTokenName, setToken} from "@/lib/toolkit/local.storage.js";
+import {getToken, getTokenName, setToken} from "@/lib/toolkit/local.storage.js";
 import {getLedger} from "@/http/api/ledger.api.js";
 import {isBlank, isNullOrUndefined} from "@/lib/toolkit/util.js";
 import {showError} from "@/lib/toolkit/toast.js";
 import {useFetch} from "@/hook/useFetch.jsx";
 import {login} from "@/http/api/user.api.js";
 import {authorizeAction} from "@/redux/feature/authorize.js";
+import {useToken} from "@/hook/useToken.jsx";
 
 export default function Auth() {
     const authorize = useSelector(state => state.authorize);
@@ -20,9 +21,10 @@ export default function Auth() {
     const mailRef = useRef();
     const pwdRef = useRef();
     const [loginResult, setLoginResult] = useFetch(login)
+    const {isLogin} = useToken();
 
     useEffect(() => {
-        authorize && navigate(HOME_PATH)
+        isLogin && navigate(HOME_PATH)
     }, [authorize]);
 
     useEffect(() => {
@@ -45,8 +47,6 @@ export default function Auth() {
     const getPwd = () => {
         return pwdRef.current?.value || '123456'
     }
-
-    //todo 登录图标位置不正确
 
     return (
         <div style={{
@@ -74,7 +74,7 @@ export default function Auth() {
                                 password:getPwd()
                             })
                         }}/>
-                        <input className="login-button" type="submit" value="Register"/>
+                        {/*<input className="login-button" type="submit" value="Register" onClick={()=>{}}/>*/}
                     </div>
                     {/*后续支持o2auth登录的时候可以解开注释*/}
                     {/*<div className="social-account-container">

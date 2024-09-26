@@ -1,19 +1,20 @@
 import {useEffect} from "react";
 import {Outlet, useNavigate} from "react-router-dom";
 import {AUTH_PATH, HOME_PATH} from "@/router/index.jsx";
-import {useSelector} from "react-redux";
+import {useToken} from "@/hook/useToken.jsx";
 
 
 export default function App() {
     const navigate = useNavigate();
-    const authorize = useSelector(state => state.authorize);
+    const {isLogin} = useToken();
+
     useEffect(() => {
-        if (authorize) {
+        if (isLogin) {
             navigate(HOME_PATH)
             return
         }
         navigate(AUTH_PATH)
-    },[authorize])
+    },[isLogin])
     return (
         <div className='w-full h-full'>
             <Outlet/>

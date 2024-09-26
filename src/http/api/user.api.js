@@ -27,6 +27,6 @@ export function register(params) {
  * @param {string} params.mail
  * @returns
  */
-export function login(params) {
+export function userLogin(params) {
     return request.post(`/api/auth/login`, params);
 }

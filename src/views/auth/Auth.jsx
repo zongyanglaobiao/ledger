@@ -1,27 +1,23 @@
 import {useEffect, useRef} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {HOME_PATH} from "@/router/index.jsx";
 import {useNavigate} from "react-router-dom";
 import {Space} from "antd-mobile";
 import Bg from '@/assets/stacked-peaks-haikei.svg'
 import '@/views/auth/auth.css'
-import {getToken, getTokenName, setToken} from "@/lib/toolkit/local.storage.js";
-import {getLedger} from "@/http/api/ledger.api.js";
 import {isBlank, isNullOrUndefined} from "@/lib/toolkit/util.js";
 import {showError} from "@/lib/toolkit/toast.js";
 import {useFetch} from "@/hook/useFetch.jsx";
-import {login} from "@/http/api/user.api.js";
-import {authorizeAction} from "@/redux/feature/authorize.js";
 import {useToken} from "@/hook/useToken.jsx";
+import {userLogin} from "@/http/api/user.api.js";
 
 export default function Auth() {
     const authorize = useSelector(state => state.authorize);
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const mailRef = useRef();
     const pwdRef = useRef();
-    const [loginResult, setLoginResult] = useFetch(login)
-    const {isLogin} = useToken();
+    const [loginResult, setLoginResult] = useFetch(userLogin)
+    const {isLogin,login} = useToken();
 
     useEffect(() => {
         isLogin && navigate(HOME_PATH)
@@ -33,8 +29,7 @@ export default function Auth() {
         }
 
         if (loginResult?.code === 200) {
-            setToken(loginResult.data.token)
-            dispatch(authorizeAction())
+            login(loginResult.data.token)
         }else{
             showError(loginResult?.message)
         }

@@ -1,11 +1,12 @@
 import {Home, User} from "@icon-park/react";
 import {List, TabBar} from "antd-mobile/2x";
 import './home.css';
-import {useEffect, useState} from "react";
+import {memo, useEffect, useState} from "react";
 import {SeoFolder} from "@icon-park/react/es";
 import {useFetch} from "@/hook/useFetch.jsx";
 import {getLedger} from "@/http/api/ledger.api.js";
 import {isNullOrUndefined} from "@/lib/toolkit/util.js";
+import {Navigate, Route, Routes, useRoutes} from "react-router-dom";
 
 function LedgerList({data,call,onClick}) {
     return (
@@ -29,7 +30,7 @@ function LedgerList({data,call,onClick}) {
     )
 }
 
-function UserHome() {
+const UserHome = memo(()=>{
     const [getLedgerRe,setLedger] = useFetch(getLedger,{data:{records: []}});
 
     useEffect(() => {
@@ -43,13 +44,31 @@ function UserHome() {
       }];
     }
     return <LedgerList data={getRenderData()} call={t=>t.year} onClick={(i)=>console.log(i)}/>
+})
+
+function A() {
+    return <div>123</div>
 }
 
+
 function UserSetting() {
+    const reactElement = useRoutes([
+        {
+            element: <A/>,
+            path: 'user-setting'
+        }
+    ]);
+
     return (
-        <div>设置</div>
+        <>
+            <Routes>
+                <Route path='user-setting' element={<A/>}/>
+            </Routes>
+            <Navigate to='/home/user-setting'/>
+        </>
     )
 }
+
 
 export default () => {
     const [isUserHome, setUserHome] = useState(true);
@@ -108,7 +127,6 @@ export default () => {
                 ))}
             </TabBar>
         </div>
-
     );
 }
 

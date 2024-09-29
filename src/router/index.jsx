@@ -9,7 +9,7 @@ const AuthPage = lazy(() => import('/src/views/auth/Auth.jsx'))
 
 
 const ROOT_PATH = "/";
-const HOME_PATH = "/home";
+const HOME_PATH = "/home/*";
 const NOT_FOUND_PATH = "*";
 const AUTH_PATH = "/auth";
 

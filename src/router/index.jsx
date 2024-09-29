@@ -1,5 +1,5 @@
-import {lazy} from "react";
-import {createHashRouter} from "react-router-dom";
+import { lazy } from "react";
+import { createHashRouter } from "react-router-dom";
 
 const HomePage = lazy(() => import('/src/views/home/Home.jsx'))
 const ErrorBoundaryPage = lazy(() => import('/src/component/errorBoundary/ErrorBoundary.jsx'))
@@ -37,4 +37,4 @@ const router = createHashRouter([
 
 
 export default  router
-export {HOME_PATH,AUTH_PATH}
+export { AUTH_PATH, HOME_PATH };

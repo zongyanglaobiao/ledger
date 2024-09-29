@@ -1,3 +1,7 @@
 .adm-tab-bar-wrap {
     min-height: 0;
 }
+
+.adm-list-item-content {
+    height: 49px;
+}

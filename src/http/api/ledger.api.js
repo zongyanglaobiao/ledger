@@ -14,6 +14,22 @@ export function saveOrUpdate(params) {
     return request.post(`/api/ledger/saveOrUpdate`, params);
 }
 
-export function getLedger() {
-    return request.get(`/api/ledger/getLedger`);
+export function getLedger(params) {
+    return request.get(`/api/ledger/ledgers`, params);
+}
+
+/**
+ * 获取账本-年
+ * @param {string} year
+ * @returns
+ */
+export function getLedgerByYear(year) {
+    return request.get(`/api/ledger/ledgers/${year}`);
+}
+
+/**
+ * 获取账本-月
+ */
+export function getLedgerByMonth(year, month) {
+    return request.get(`/api/ledger/ledgers/${year}/${month}`);
 }

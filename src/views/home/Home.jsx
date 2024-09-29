@@ -1,70 +1,48 @@
 import {Home, User} from "@icon-park/react";
 import {List, TabBar} from "antd-mobile/2x";
 import './home.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {SeoFolder} from "@icon-park/react/es";
+import {useFetch} from "@/hook/useFetch.jsx";
+import {getLedger} from "@/http/api/ledger.api.js";
+import {isNullOrUndefined} from "@/lib/toolkit/util.js";
+
+function LedgerList({data,call,onClick}) {
+    return (
+        <List>
+            {
+                data.map((item, index) => (
+                    <List.Item
+                        arrowIcon={false}
+                        className='h-49px'
+                        style={{
+                            paddingLeft: '10px'
+                        }}
+                        onClick={()=> !isNullOrUndefined(onClick) && onClick(item)}
+                        prefix={<SeoFolder className='layout-center' theme="multi-color" size="33" fill={['#333', '#2F88FF', '#FFF', '#43CCF8']} strokeWidth={1}/>}
+                        key={index}>
+                        <div className='h-full leading-23px text-23px'>{call(item)}</div>
+                    </List.Item>
+                ))
+            }
+        </List>
+    )
+}
 
 function UserHome() {
-    const [data, setData] = useState((()=>{
-        const arr = []
-        for (let i = 2000; i < 2025; i++) {
-            arr.push(i)
-        }
-        return arr;
-    })())
-    const [hasMore, setHasMore] = useState(true)
+    const [getLedgerRe,setLedger] = useFetch(getLedger,{data:{records: []}});
 
+    useEffect(() => {
+        setLedger({isAsc:true,size:100})
+    }, []);
 
-    let count = 0
-    async function mockRequest() {
-        if (count >= 5) {
-            return []
-        }
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        count++
-        return [
-            'A',
-            'B',
-            'C',
-            'D',
-            'E',
-            'F',
-            'G',
-            'H',
-            'I',
-            'J',
-            'K',
-            'L',
-            'M',
-            'N',
-            'O',
-            'P',
-            'Q',
-        ]
+    const getRenderData = () => {
+      return getLedgerRe.data.records.length > 0 ? getLedgerRe.data.records : [{
+          //获取当前所在年份
+          year: new Date().getFullYear()
+      }];
     }
-
-    async function loadMore() {
-        const append = await mockRequest()
-        setData(val => [...val, ...append])
-        setHasMore(append.length > 0)
-    }
-
-    return (
-        <div>
-            <List>
-                {data.map((item, index) => (
-                    <List.Item
-                        prefix={<SeoFolder theme="multi-color" size="40" fill={['#333' ,'#2F88FF' ,'#FFF' ,'#43CCF8']} strokeWidth={1}/>}
-                        key={index}>
-                        <p className='text-18px'>
-                            {item}
-                        </p>
-                    </List.Item>
-                ))}
-            </List>
-            {/*<InfiniteScroll loadMore={loadMore} hasMore={hasMore} />*/}
-        </div>
-    )
+    return <LedgerList data={getRenderData()} call={t=>t.year} onClick={(i)=>console.log(i)}/>
 }
 
 function UserSetting() {
@@ -118,7 +96,7 @@ export default () => {
     }
 
     return (
-        <div className='w-vw h-vh layout-center bg-[#fafbfc] grid'>
+        <div className='w-vw h-vh layout-center bg-[#fafbfc] grid grid-rows-[1fr_auto]'>
             <div className='overflow-auto w-full h-full'>
                 {isUserHome ? <UserHome/> : <UserSetting/>}
             </div>

@@ -1,12 +1,13 @@
 import {Home, User} from "@icon-park/react";
-import {List, TabBar} from "antd-mobile/2x";
+import {AutoCenter, List, TabBar} from "antd-mobile/2x";
 import './home.css';
 import {memo, useEffect, useState} from "react";
 import {SeoFolder} from "@icon-park/react/es";
 import {useFetch} from "@/hook/useFetch.jsx";
-import {getLedger} from "@/http/api/ledger.api.js";
+import {getLedger, getLedgerByYear} from "@/http/api/ledger.api.js";
 import {isNullOrUndefined} from "@/lib/toolkit/util.js";
-import {Navigate, Route, Routes, useRoutes} from "react-router-dom";
+import {Navigate, Route, Routes, useLocation, useNavigate, useRoutes} from "react-router-dom";
+import {Button, NavBar} from "antd-mobile";
 
 function LedgerList({data,call,onClick}) {
     return (
@@ -30,8 +31,31 @@ function LedgerList({data,call,onClick}) {
     )
 }
 
+
+function LedgerDay() {
+    return <div>日期数据</div>
+}
+
+function LedgerMonth() {
+    const location = useLocation();
+    const [getLedgerByYearRe,setLedgerByYear] = useFetch(getLedgerByYear,{data:[]})
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        !isNullOrUndefined(location?.state?.year) && setLedgerByYear(location.state.year)
+    }, [location]);
+
+    return (
+        <div className='grid grid-rows-[1fr_auto]'>
+            <NavBar className='mt-10px mb-10px'  onBack={()=>{navigate('/home/ledger-year')}}>月份数据</NavBar>
+            <LedgerList data={getLedgerByYearRe.data} call={t=>`${t.month}月`} onClick={item=>{navigate('/home/ledger-day',{state:{year:location?.state?.year,month:item.month}})}}/>
+        </div>
+    )
+}
+
 const UserHome = memo(()=>{
     const [getLedgerRe,setLedger] = useFetch(getLedger,{data:{records: []}});
+    const navigate = useNavigate();
 
     useEffect(() => {
         setLedger({isAsc:true,size:100})
@@ -43,7 +67,27 @@ const UserHome = memo(()=>{
           year: new Date().getFullYear()
       }];
     }
-    return <LedgerList data={getRenderData()} call={t=>t.year} onClick={(i)=>console.log(i)}/>
+
+    const Main = () => {
+      return (
+          <div className='grid grid-rows-[1fr_auto]'>
+              <AutoCenter className='mt-10px mb-10px'>年度账本</AutoCenter>
+              <LedgerList data={getRenderData()} call={t=>`${t.year}年`} onClick={(i)=> navigate('ledger-month',{state:{year:i.year}})}/>
+          </div>
+      )
+    }
+
+    return (
+        <>
+            <Routes>
+                <Route path='ledger-year' element={<Main/>}/>
+                <Route path='*' element={<Main/>}/>
+                <Route path='ledger-month' element={<LedgerMonth/>}/>
+                <Route path='ledger-day' element={<LedgerDay/>}/>
+            </Routes>
+            <Navigate to='ledeger-year' />
+        </>
+    )
 })
 
 function A() {
@@ -52,20 +96,12 @@ function A() {
 
 
 function UserSetting() {
-    const reactElement = useRoutes([
-        {
-            element: <A/>,
-            path: 'user-setting'
-        }
-    ]);
-
     return (
-        <>
-            <Routes>
-                <Route path='user-setting' element={<A/>}/>
-            </Routes>
-            <Navigate to='/home/user-setting'/>
-        </>
+        <div>
+            <Button>
+                退出登录
+            </Button>
+        </div>
     )
 }
 

@@ -5,3 +5,15 @@
 .adm-list-item-content {
     height: 49px;
 }
+
+.adm-nav-bar {
+    --height: 33px;
+}
+
+.adm-nav-bar-title{
+    font-size: 20px;
+}
+
+.adm-nav-bar-back-arrow {
+    font-size: 25px;
+}

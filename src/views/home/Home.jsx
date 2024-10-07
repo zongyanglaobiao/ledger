@@ -1,13 +1,13 @@
 import {Home, User} from "@icon-park/react";
-import {AutoCenter, List, TabBar} from "antd-mobile/2x";
+import {AutoCenter, Collapse, List, TabBar} from "antd-mobile/2x";
 import './home.css';
 import {memo, useEffect, useState} from "react";
-import {SeoFolder} from "@icon-park/react/es";
+import {AddFour, SeoFolder} from "@icon-park/react/es";
 import {useFetch} from "@/hook/useFetch.jsx";
-import {getLedger, getLedgerByYear} from "@/http/api/ledger.api.js";
+import {getLedger, getLedgerByMonth, getLedgerByYear} from "@/http/api/ledger.api.js";
 import {isNullOrUndefined} from "@/lib/toolkit/util.js";
-import {Navigate, Route, Routes, useLocation, useNavigate, useRoutes} from "react-router-dom";
-import {Button, NavBar} from "antd-mobile";
+import {Navigate, Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {Button, NavBar, Space} from "antd-mobile";
 
 function LedgerList({data,call,onClick}) {
     return (
@@ -16,9 +16,10 @@ function LedgerList({data,call,onClick}) {
                 data.map((item, index) => (
                     <List.Item
                         arrowIcon={false}
-                        className='h-49px'
                         style={{
-                            paddingLeft: '10px'
+                            paddingLeft: '10px',
+                            // height: '49px',
+                            //TODO 高度问题
                         }}
                         onClick={()=> !isNullOrUndefined(onClick) && onClick(item)}
                         prefix={<SeoFolder className='layout-center' theme="multi-color" size="33" fill={['#333', '#2F88FF', '#FFF', '#43CCF8']} strokeWidth={1}/>}
@@ -31,14 +32,10 @@ function LedgerList({data,call,onClick}) {
     )
 }
 
-
-function LedgerDay() {
-    return <div>日期数据</div>
-}
-
 function LedgerMonth() {
     const location = useLocation();
     const [getLedgerByYearRe,setLedgerByYear] = useFetch(getLedgerByYear,{data:[]})
+    const [getLedgerByMonthRe,setLedgerByMonth] = useFetch(getLedgerByMonth,{data:[]})
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -47,8 +44,40 @@ function LedgerMonth() {
 
     return (
         <div className='grid grid-rows-[1fr_auto]'>
-            <NavBar className='mt-10px mb-10px'  onBack={()=>{navigate('/home/ledger-year')}}>月份数据</NavBar>
-            <LedgerList data={getLedgerByYearRe.data} call={t=>`${t.month}月`} onClick={item=>{navigate('/home/ledger-day',{state:{year:location?.state?.year,month:item.month}})}}/>
+            <NavBar className='mt-10px mb-10px'  onBack={()=>{navigate('/home/ledger-year')}}>记账详细</NavBar>
+            {/*<LedgerList data={getLedgerByYearRe.data} call={t=>`${t.month}月`} onClick={item=>{navigate('/home/ledger-day',{state:{year:location?.state?.year,month:item.month}})}}/>*/}
+            <Collapse accordion>
+                {
+                    getLedgerByYearRe.data.map((t,index)=> {
+                        return (
+                            <Collapse.Panel className=' text-20px' onClick={()=> setLedgerByMonth(location.state.year,t.month)} key={index} title={`${t.month}月`}>
+                                <Space  wrap horizontal>
+                                    {
+                                        /*getLedgerByMonthRe.data.map((t,i)=>{
+                                            return (
+                                                <Button size={"mini"}  color='primary'>
+                                                    {`${t.day}日`}
+                                                </Button>
+                                            )
+                                        })*/
+                                        (()=>{
+                                            const arr = []
+                                            for (let i = 0; i < 30; i++) {
+                                                arr.push((
+                                                    <Button size={"mini"}  color='primary'>
+                                                        {`${i}日`}
+                                                    </Button>
+                                                ))
+                                            }
+                                            return arr
+                                        })()
+                                    }
+                                </Space>
+                            </Collapse.Panel>
+                        )
+                    })
+                }
+            </Collapse>
         </div>
     )
 }
@@ -62,10 +91,9 @@ const UserHome = memo(()=>{
     }, []);
 
     const getRenderData = () => {
-      return getLedgerRe.data.records.length > 0 ? getLedgerRe.data.records : [{
-          //获取当前所在年份
-          year: new Date().getFullYear()
-      }];
+        //所在的时间的没有就添加但此时不保存数据
+        let data = getLedgerRe.data.records
+        return data.length > 0 ?  data : [{year: new Date().getFullYear()}];
     }
 
     const Main = () => {
@@ -83,7 +111,6 @@ const UserHome = memo(()=>{
                 <Route path='ledger-year' element={<Main/>}/>
                 <Route path='*' element={<Main/>}/>
                 <Route path='ledger-month' element={<LedgerMonth/>}/>
-                <Route path='ledger-day' element={<LedgerDay/>}/>
             </Routes>
             <Navigate to='ledeger-year' />
         </>
@@ -107,9 +134,11 @@ function UserSetting() {
 
 
 export default () => {
-    const [isUserHome, setUserHome] = useState(true);
     const USER_HOME_KEY = "USER_HOME_KEY"
     const USER_CENTER_KEY = "USER_CENTER_KEY"
+    const ADD_LEDGER_KEY = "ADD_LEDGER_KEY"
+    const [showComponent, setShowComponent] = useState(USER_HOME_KEY);
+
 
     const tabs = [
         {
@@ -129,6 +158,24 @@ export default () => {
             },
         },
         {
+            key: ADD_LEDGER_KEY,
+            title: (isActive) => {
+                return (
+                    <div className='flex flex-col items-center'>
+                        {
+                            isActive ?
+                                <AddFour className='leading-0' theme="multi-color" size="25"
+                                         fill={['#333', '#2F88FF', '#FFF', '#43CCF8']} strokeWidth={1}/>
+                                :
+                                <AddFour className='leading-0' theme="multi-color" size="25"
+                                         fill={['#333', '#2F88FF', '#FFF', '#43CCF8']} strokeWidth={1}/>
+                        }
+                        <div className='text-sm'>添加</div>
+                    </div>
+                )
+            }
+        },
+        {
             key: USER_CENTER_KEY,
             title: (isActive) => {
                 return (
@@ -146,17 +193,26 @@ export default () => {
         },
     ]
 
-    const onChange = (key) => {
-        setUserHome(key === USER_HOME_KEY);
+    const getComponent = (key) => {
+        switch (key) {
+            case USER_HOME_KEY:
+                return <UserHome/>
+            case ADD_LEDGER_KEY:
+                return <div>开发中...</div>
+            case USER_CENTER_KEY:
+                return <UserSetting/>
+            default:
+                return <UserHome/>
+        }
     }
 
     return (
         <div className='w-vw h-vh layout-center bg-[#fafbfc] grid grid-rows-[1fr_auto]'>
             <div className='overflow-auto w-full h-full'>
-                {isUserHome ? <UserHome/> : <UserSetting/>}
+                {getComponent(showComponent)}
             </div>
             <TabBar
-                onChange={onChange}
+                onChange={setShowComponent}
                 className='w-vw m-0 p-0 border-t-solid border-0.5px border-gray'>
                 {tabs.map(item => (
                     <TabBar.Item key={item.key} title={item.title}/>

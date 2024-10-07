@@ -2,10 +2,6 @@
     min-height: 0;
 }
 
-.adm-list-item-content {
-    height: 49px;
-}
-
 .adm-nav-bar {
     --height: 33px;
 }

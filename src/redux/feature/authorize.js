@@ -10,9 +10,9 @@ const AUTHORIZE_FAIL = false;
  *  false 授权异常 true 授权正常
  *  TODO BUG 当用户是登录状态退出浏览器在登录会先跳转到首页再跳转到主页
  */
-const authorizeProcessor = generateSlice(getRandomId(), AUTHORIZE_FAIL, {
+const authorizeProcessor = generateSlice(getRandomId(), {hasAuthorize: AUTHORIZE_FAIL}, {
     authorizeAction() {
-        return isBlank(getToken()) ? AUTHORIZE_FAIL : AUTHORIZE_SUCCESS
+        return {hasAuthorize:isBlank(getToken()) ? AUTHORIZE_FAIL : AUTHORIZE_SUCCESS}
     },
 });
 

@@ -30,7 +30,7 @@ serviceAxios.interceptors.request.use(
 serviceAxios.interceptors.response.use(
 	(res) => {
 		if (res.data.code === 401) {
-			showError(res.data.message)
+			showError('身份认证失败')
 			//移除之前的token
 			removeToken()
 			store.dispatch(authorizeAction())

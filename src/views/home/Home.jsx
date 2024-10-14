@@ -18,8 +18,8 @@ function LedgerList({data,call,onClick}) {
                         arrowIcon={false}
                         style={{
                             paddingLeft: '10px',
-                            // height: '49px',
-                            //TODO 高度问题
+                            height: '49px',
+                            display:"flex",
                         }}
                         onClick={()=> !isNullOrUndefined(onClick) && onClick(item)}
                         prefix={<SeoFolder className='layout-center' theme="multi-color" size="33" fill={['#333', '#2F88FF', '#FFF', '#43CCF8']} strokeWidth={1}/>}
@@ -46,11 +46,11 @@ function LedgerMonth() {
         <div className='grid grid-rows-[1fr_auto]'>
             <NavBar className='mt-10px mb-10px'  onBack={()=>{navigate('/home/ledger-year')}}>记账详细</NavBar>
             {/*<LedgerList data={getLedgerByYearRe.data} call={t=>`${t.month}月`} onClick={item=>{navigate('/home/ledger-day',{state:{year:location?.state?.year,month:item.month}})}}/>*/}
-            <Collapse accordion>
+            <Collapse accordion className='w-full'>
                 {
                     getLedgerByYearRe.data.map((t,index)=> {
                         return (
-                            <Collapse.Panel className=' text-20px' onClick={()=> setLedgerByMonth(location.state.year,t.month)} key={index} title={`${t.month}月`}>
+                            <Collapse.Panel className='h-49px' onClick={()=> setLedgerByMonth(location.state.year,t.month)} key={index} title={`${t.month}月`}>
                                 <Space  wrap horizontal>
                                     {
                                         /*getLedgerByMonthRe.data.map((t,i)=>{
@@ -64,7 +64,7 @@ function LedgerMonth() {
                                             const arr = []
                                             for (let i = 0; i < 30; i++) {
                                                 arr.push((
-                                                    <Button size={"mini"}  color='primary'>
+                                                    <Button key={i} color='primary'>
                                                         {`${i}日`}
                                                     </Button>
                                                 ))

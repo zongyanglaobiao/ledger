@@ -4,11 +4,11 @@ import {isBlank} from "@/lib/toolkit/util.js";
 import {authorizeAction} from "@/redux/feature/authorize.js";
 
 export const useToken = () => {
-    const authorize = useSelector(state => state.authorize);
+    const {hasAuthorize} = useSelector(state => state.authorize);
     const dispatch = useDispatch();
 
     return {
-        isLogin: authorize || !isBlank(getToken()),
+        isLogin: hasAuthorize || !isBlank(getToken()),
         token: getToken(),
         logout: () => {
             removeToken();
